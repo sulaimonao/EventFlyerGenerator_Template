@@ -1,8 +1,6 @@
-#generate_project.py
-
-
 import os
 import json
+from pathlib import Path
 
 def load_json(file_path):
     """Load a JSON file."""
@@ -94,8 +92,11 @@ if __name__ == "__main__":
 def main():
     print("Welcome to the Configurable Dynamic Project Generator!")
 
+    # Get the directory of the current script
+    script_dir = Path(__file__).parent
+
     # Load and validate config.json
-    config_path = '/config.json'
+    config_path = script_dir / 'config.json'
     try:
         config = load_config(config_path)
     except (FileNotFoundError, ValueError) as e:
@@ -103,8 +104,10 @@ def main():
         return
 
     # Load project structure and file contents templates
-    project_structure = load_json('/project_structure.json')["structure"]
-    file_contents = load_json('/file_contents.json')
+    project_structure_path = script_dir / 'project_structure.json'
+    file_contents_path = script_dir / 'file_contents.json'
+    project_structure = load_json(project_structure_path)["structure"]
+    file_contents = load_json(file_contents_path)
     
     # Extend structure with custom directories and files from config
     project_structure = extend_project_structure(
