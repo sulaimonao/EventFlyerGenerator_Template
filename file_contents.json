@@ -1,0 +1,19 @@
+{
+  "{{ project_name }}/src/main.py": "\"\"\"\nMain entry point for {{ project_name }}.\n\nThis script handles command-line arguments and initiates flyer generation.\n\"\"\"\n\nimport argparse\nfrom flyer_generator import generate_flyer\n\ndef parse_args():\n    parser = argparse.ArgumentParser(description='Generate event flyers from text input.')\n    parser.add_argument('--input', type=str, required=True, help='Path to the text file containing event details')\n    parser.add_argument('--output', type=str, default='output_flyer.pdf', help='Output flyer file name')\n    return parser.parse_args()\n\n\ndef main():\n    args = parse_args()\n    generate_flyer(args.input, args.output)\n\nif __name__ == \"__main__\":\n    main()\n",
+  
+  "{{ project_name }}/src/flyer_generator.py": "\"\"\"\nFlyer Generator Module\n\nContains functions to generate flyers using OpenAI API and ReportLab.\n\"\"\"\n\nimport os\nfrom openai_client import get_flyer_content\nfrom utils import create_pdf\n\ndef generate_flyer(input_file, output_file):\n    with open(input_file, 'r') as f:\n        event_details = f.read()\n    flyer_content = get_flyer_content(event_details)\n    create_pdf(flyer_content, output_file)\n    print(f\"Flyer generated and saved as {output_file}\")\n",
+  
+  "{{ project_name }}/src/openai_client.py": "\"\"\"\nOpenAI Client Module\n\nHandles communication with the OpenAI API to generate flyer content.\n\"\"\"\n\nimport os\nimport openai\n\nopenai.api_key = os.getenv('OPENAI_API_KEY')\n\n\ndef get_flyer_content(event_details):\n    prompt = f\"\"\"\n    Create a visually appealing flyer content for the following event:\n    {event_details}\n    \"\"\"\n    response = openai.Completion.create(\n        engine=\"text-davinci-003\",\n        prompt=prompt,\n        max_tokens=500\n    )\n    return response.choices[0].text.strip()\n",
+  
+  "{{ project_name }}/src/utils.py": "\"\"\"\nUtility Functions\n\nIncludes functions for PDF creation and other helper methods.\n\"\"\"\n\nfrom reportlab.lib.pagesizes import LETTER\nfrom reportlab.pdfgen import canvas\n\n\ndef create_pdf(content, filename):\n    c = canvas.Canvas(filename, pagesize=LETTER)\n    width, height = LETTER\n    text_object = c.beginText()\n    text_object.setTextOrigin(50, height - 50)\n    text_object.setFont(\"Helvetica\", 12)\n    for line in content.split('\\n'):\n        text_object.textLine(line)\n    c.drawText(text_object)\n    c.save()\n",
+  
+  "setup.py": "from setuptools import setup, find_packages\n\nsetup(\n    name=\"{{ project_name }}\",\n    version=\"{{ version }}\",\n    packages=find_packages(),\n    install_requires=[\n        \"openai\",\n        \"reportlab\"\n    ],\n    entry_points={\n        \"console_scripts\": [\n            \"{{ project_name.lower() }} = {{ project_name }}.src.main:main\",\n        ],\n    },\n)\n",
+  
+  ".env": "# Store your environment variables here.\nOPENAI_API_KEY=your_openai_api_key_here\n",
+  
+  "README.md": "# {{ project_name }}\n\n## Description\n\nAn application that generates fully designed event flyers from text input using the OpenAI API.\n\n## Features\n- Accepts text input describing event details.\n- Generates flyer content and design suggestions using OpenAI.\n- Outputs the flyer as a PDF file.\n\n## Installation\n\n```bash\npip install -r requirements.txt\n```\n\n## Usage\n\n```bash\npython src/main.py --input path/to/event_details.txt --output output_flyer.pdf\n```\n\n## Configuration\n\n- Replace `your_openai_api_key_here` in the `.env` file with your actual OpenAI API key.\n\n## Dependencies\n- Python 3.7+\n- OpenAI Python SDK\n- ReportLab\n",
+  
+  ".gitignore": "venv/\n__pycache__/\n.env\n*.pdf\n",
+  
+  "requirements.txt": "openai\nreportlab\npython-dotenv\n"
+}

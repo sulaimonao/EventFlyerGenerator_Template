@@ -1,0 +1,29 @@
+{
+  "project_name": "{{ project_name }}",
+  "structure": {
+    "{{ project_name }}": [
+      "src",
+      "tests",
+      "assets",
+      "templates"
+    ],
+    "src": [
+      "__init__.py",
+      "main.py",
+      "flyer_generator.py",
+      "openai_client.py",
+      "utils.py"
+    ],
+    "tests": [
+      "test_flyer_generator.py",
+      "test_openai_client.py"
+    ],
+    ".": [
+      "setup.py",
+      "requirements.txt",
+      "README.md",
+      ".gitignore",
+      ".env"
+    ]
+  }
+}

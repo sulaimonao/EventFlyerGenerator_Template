@@ -1,0 +1,20 @@
+{
+  "project_name": "EventFlyerGenerator",
+  "author": "Akeem Sulaimon",
+  "email": "your.email@example.com",
+  "version": "1.0.0",
+  "license": "MIT",
+  "optional_modules": {
+    "logging": true,
+    "cli": true
+  },
+  "custom_directories": [
+    "assets",
+    "templates"
+  ],
+  "custom_files": {
+    "README.md": "# EventFlyerGenerator\n\nAn application that generates event flyers from text input using OpenAI API.",
+    "requirements.txt": "openai\nreportlab\n",
+    ".gitignore": "venv/\n__pycache__/\n.env\n"
+  }
+}
