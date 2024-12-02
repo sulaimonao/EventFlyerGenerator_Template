@@ -3,7 +3,7 @@
   
   "{{ project_name }}/src/flyer_generator.py": "\"\"\"\nFlyer Generator Module\n\nContains functions to generate flyers using OpenAI API and ReportLab.\n\"\"\"\n\nimport os\nfrom openai_client import get_flyer_content\nfrom utils import create_pdf\n\ndef generate_flyer(input_file, output_file):\n    with open(input_file, 'r') as f:\n        event_details = f.read()\n    flyer_content = get_flyer_content(event_details)\n    create_pdf(flyer_content, output_file)\n    print(f\"Flyer generated and saved as {output_file}\")\n",
   
-  "{{ project_name }}/src/openai_client.py": "\"\"\"\nOpenAI Client Module\n\nHandles communication with the OpenAI API to generate flyer content.\n\"\"\"\n\nimport os\nimport openai\n\nopenai.api_key = os.getenv('OPENAI_API_KEY')\n\n\ndef get_flyer_content(event_details):\n    prompt = f\"\"\"\n    Create a visually appealing flyer content for the following event:\n    {event_details}\n    \"\"\"\n    response = openai.Completion.create(\n        engine=\"text-davinci-003\",\n        prompt=prompt,\n        max_tokens=500\n    )\n    return response.choices[0].text.strip()\n",
+  "{{ project_name }}/src/openai_client.py": "\"\"\"\nOpenAI Client Module\n\nHandles communication with the OpenAI API to generate flyer content.\n\"\"\"\n\nimport os\nfrom openai import OpenAI\n\n# Instantiate the OpenAI client with the API key\nclient = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))\n\n\ndef get_flyer_content(event_details):\n    prompt = f\"\"\"\n    Create a visually appealing flyer content for the following event:\n    {event_details}\n    \"\"\"\n    response = client.chat.completions.create(\n        model=\"gpt-4o\",  # Ensure you use the correct model\n        messages=[{\"role\": \"user\", \"content\": prompt}],\n        max_tokens=500\n    )\n    return response.choices[0].message.content.strip()\n",
   
   "{{ project_name }}/src/utils.py": "\"\"\"\nUtility Functions\n\nIncludes functions for PDF creation and other helper methods.\n\"\"\"\n\nfrom reportlab.lib.pagesizes import LETTER\nfrom reportlab.pdfgen import canvas\n\n\ndef create_pdf(content, filename):\n    c = canvas.Canvas(filename, pagesize=LETTER)\n    width, height = LETTER\n    text_object = c.beginText()\n    text_object.setTextOrigin(50, height - 50)\n    text_object.setFont(\"Helvetica\", 12)\n    for line in content.split('\\n'):\n        text_object.textLine(line)\n    c.drawText(text_object)\n    c.save()\n",
   
@@ -15,5 +15,5 @@
   
   ".gitignore": "venv/\n__pycache__/\n.env\n*.pdf\n",
   
-  "requirements.txt": "openai\nreportlab\npython-dotenv\n"
+  "requirements.txt": "openai==1.55.3\nreportlab\npython-dotenv\n"
 }
