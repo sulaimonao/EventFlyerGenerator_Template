@@ -95,7 +95,7 @@ def main():
     print("Welcome to the Configurable Dynamic Project Generator!")
 
     # Load and validate config.json
-    config_path = '/mnt/data/config.json'
+    config_path = '/config.json'
     try:
         config = load_config(config_path)
     except (FileNotFoundError, ValueError) as e:
@@ -103,8 +103,8 @@ def main():
         return
 
     # Load project structure and file contents templates
-    project_structure = load_json('/mnt/data/project_structure.json')["structure"]
-    file_contents = load_json('/mnt/data/file_contents.json')
+    project_structure = load_json('/project_structure.json')["structure"]
+    file_contents = load_json('/file_contents.json')
     
     # Extend structure with custom directories and files from config
     project_structure = extend_project_structure(
