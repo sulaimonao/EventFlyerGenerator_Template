@@ -67,18 +67,29 @@ def extend_project_structure(structure, additional_dirs, additional_files):
 
 def add_optional_modules(file_contents, placeholders, optional_features):
     """Add optional feature snippets to file contents."""
-    if optional_features.get("logging"):
-        file_contents[f"{placeholders['project_name']}/src/utils.py"] += """
+    project_name = placeholders['project_name']
 
+    # Ensure the utils.py file exists in file_contents
+    utils_key = f"{project_name}/src/utils.py"
+    if utils_key not in file_contents:
+        file_contents[utils_key] = '"""Utility Functions"""\n'
+
+    if optional_features.get("logging"):
+        file_contents[utils_key] += """
 import logging
 
 def setup_logging():
     logging.basicConfig(level=logging.INFO)
     return logging.getLogger(__name__)
 """
-    if optional_features.get("cli"):
-        file_contents[f"{placeholders['project_name']}/src/main.py"] += """
 
+    # Ensure the main.py file exists in file_contents
+    main_key = f"{project_name}/src/main.py"
+    if main_key not in file_contents:
+        file_contents[main_key] = '"""Main entry point"""\n'
+
+    if optional_features.get("cli"):
+        file_contents[main_key] += """
 import argparse
 
 def parse_args():
