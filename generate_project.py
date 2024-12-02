@@ -31,6 +31,9 @@ def load_config(config_path):
 def replace_placeholders(content, placeholders):
     """Replace placeholders in content with actual values."""
     for key, value in placeholders.items():
+        # Convert non-string values to JSON strings for replacement
+        if not isinstance(value, str):
+            value = json.dumps(value, indent=4)  # Serialize as JSON string
         content = content.replace(f"{{{{ {key} }}}}", value)
     return content
 
@@ -93,10 +96,14 @@ def main():
     print("Welcome to the Configurable Dynamic Project Generator!")
 
     # Get the directory of the current script
-    script_dir = Path(__file__).parent
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Construct paths to config.json and templates
+    config_path = os.path.join(script_dir, 'config.json')
+    project_structure_path = os.path.join(script_dir, 'project_structure.json')
+    file_contents_path = os.path.join(script_dir, 'file_contents.json')
 
     # Load and validate config.json
-    config_path = script_dir / 'config.json'
     try:
         config = load_config(config_path)
     except (FileNotFoundError, ValueError) as e:
@@ -104,11 +111,13 @@ def main():
         return
 
     # Load project structure and file contents templates
-    project_structure_path = script_dir / 'project_structure.json'
-    file_contents_path = script_dir / 'file_contents.json'
-    project_structure = load_json(project_structure_path)["structure"]
-    file_contents = load_json(file_contents_path)
-    
+    try:
+        project_structure = load_json(project_structure_path)["structure"]
+        file_contents = load_json(file_contents_path)
+    except FileNotFoundError as e:
+        print(f"Error loading project template files: {e}")
+        return
+
     # Extend structure with custom directories and files from config
     project_structure = extend_project_structure(
         project_structure, 
