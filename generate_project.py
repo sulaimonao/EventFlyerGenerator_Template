@@ -46,8 +46,9 @@ def create_file(file_path, content):
 def create_project(project_structure, file_contents, config):
     """Create project files and directories based on the structure and contents."""
     for directory, files in project_structure.items():
+        resolved_directory = directory.replace("{{ project_name }}", config["project_name"])
         for file_name in files:
-            file_path = os.path.join(directory.replace("{{ project_name }}", config["project_name"]), file_name)
+            file_path = os.path.join(resolved_directory, file_name)
             content = file_contents.get(file_name, "")
             content = replace_placeholders(content, config)
             create_file(file_path, content)
